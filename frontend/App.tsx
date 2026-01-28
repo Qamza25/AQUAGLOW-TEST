@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { Navbar } from './components/Navbar';
 import { ServiceCard } from './components/ServiceCard';
@@ -26,10 +25,8 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [booking, setBooking] = useState<BookingDetails | null>(null);
   
-  // Chatbot hover states for auto open/close
-  const [isHoveringTrigger, setIsHoveringTrigger] = useState(false);
-  const [isHoveringChat, setIsHoveringChat] = useState(false);
-  const isChatOpen = isHoveringTrigger || isHoveringChat;
+  // Chatbot state – now controlled by click instead of hover
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const calculateTotalPrice = useCallback((pkg: WashPackage, details: CarDetails | null) => {
     if (!details) return CAR_TYPE_BASE_PRICES[CarType.SEDAN] + pkg.price;
@@ -71,8 +68,7 @@ const App: React.FC = () => {
     <section className="relative min-h-[90vh] flex flex-col items-center justify-center text-center px-6 pt-40 animate-in fade-in zoom-in duration-1000">
       <div className="absolute inset-0 z-0 overflow-hidden">
         <img 
-          src="images/fresh.jpg
-          " 
+          src="images/fresh.jpg"
           className="w-full h-full object-cover opacity-30 blur-[2px] scale-105"
           alt="Car wash background"
           loading="eager"
@@ -165,7 +161,6 @@ const App: React.FC = () => {
         </div>
       </div>
       
-      
       <div className="space-y-16">
         <div className="space-y-6">
           <h2 className="text-6xl font-black text-white leading-[0.9] tracking-tight uppercase">Precision <br /><span className="text-blue-500">Equipment.</span></h2>
@@ -195,7 +190,12 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen text-slate-100 selection:bg-blue-500/30 selection:text-blue-200 flex flex-col">
-      <Navbar onNavigate={setStep} currentStep={step} onHoverChat={setIsHoveringTrigger} />
+      <Navbar 
+        onNavigate={setStep} 
+        currentStep={step} 
+        // We pass a toggle function instead of hover
+        onToggleChat={() => setIsChatOpen(prev => !prev)}
+      />
       
       <main className="flex-grow w-full overflow-hidden">
         <div className="max-w-7xl mx-auto">
@@ -313,7 +313,10 @@ const App: React.FC = () => {
         </div>
       </main>
       
-      <Chatbot isOpen={isChatOpen} onHover={setIsHoveringChat} />
+      <Chatbot 
+        isOpen={isChatOpen} 
+        onClose={() => setIsChatOpen(false)}
+      />
       
       <footer className="border-t border-white/5 py-24 bg-slate-950/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">

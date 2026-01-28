@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ICONS } from '../constants';
 import { AppStep } from '../types';
@@ -6,10 +5,10 @@ import { AppStep } from '../types';
 interface NavbarProps {
   onNavigate: (step: AppStep) => void;
   currentStep: AppStep;
-  onHoverChat: (isHovering: boolean) => void;
+  onToggleChat: () => void;          // ← toggles chatbot visibility on click
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentStep, onHoverChat }) => (
+export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentStep, onToggleChat }) => (
   <header className="sticky top-0 z-50 bg-slate-950/50 backdrop-blur-xl border-b border-white/5">
     <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
       <button 
@@ -46,17 +45,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate, currentStep, onHover
       </nav>
 
       <div className="flex items-center gap-4">
-        <div 
-          onMouseEnter={() => onHoverChat(true)}
-          onMouseLeave={() => onHoverChat(false)}
-          className="relative"
+        <button 
+          onClick={onToggleChat}
+          className="p-3 bg-blue-500/10 text-blue-400 rounded-full hover:bg-blue-600 hover:text-white transition-all shadow-glow flex items-center justify-center border border-blue-500/20"
+          aria-label="Toggle chatbot"
         >
-          <button 
-            className="p-3 bg-blue-500/10 text-blue-400 rounded-full hover:bg-blue-600 hover:text-white transition-all shadow-glow flex items-center justify-center border border-blue-500/20"
-          >
-            <ICONS.ChatBubble className="w-6 h-6" />
-          </button>
-        </div>
+          <ICONS.ChatBubble className="w-6 h-6" />
+        </button>
       </div>
     </div>
   </header>

@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import { ICONS, WASH_PACKAGES } from '../constants';
@@ -11,12 +10,12 @@ interface Message {
 
 interface ChatbotProps {
   isOpen: boolean;
-  onHover: (isHovering: boolean) => void;
+  onClose: () => void;           // New: called when user clicks the X button
 }
 
 type ChatStage = 'INITIAL' | 'ASK_SIZE' | 'ASK_CONDITION' | 'ASK_MODEL' | 'RECOMMEND' | 'FINAL';
 
-export const Chatbot: React.FC<ChatbotProps> = ({ isOpen, onHover }) => {
+export const Chatbot: React.FC<ChatbotProps> = ({ isOpen, onClose }) => {
   const [messages, setMessages] = useState<Message[]>([
     { role: 'assistant', text: "Hello! I'm your AquaGlow Assistant. How can I help you preserve your vehicle's beauty today?" }
   ]);
@@ -193,8 +192,6 @@ export const Chatbot: React.FC<ChatbotProps> = ({ isOpen, onHover }) => {
 
   return (
     <div 
-      onMouseEnter={() => onHover(true)}
-      onMouseLeave={() => onHover(false)}
       className="fixed bottom-10 right-10 w-96 h-[600px] z-[100] flex flex-col glass-card border-blue-500/30 shadow-[0_0_50px_rgba(59,130,246,0.3)] rounded-[2.5rem] overflow-hidden animate-in zoom-in slide-in-from-bottom-10 duration-500"
     >
       <div className="p-6 bg-blue-600 flex items-center justify-between shadow-xl relative z-10">
@@ -207,6 +204,17 @@ export const Chatbot: React.FC<ChatbotProps> = ({ isOpen, onHover }) => {
             <p className="text-[10px] text-blue-100 font-bold uppercase tracking-tighter animate-pulse mt-1">AI Protocol Engine</p>
           </div>
         </div>
+
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="text-white hover:text-gray-200 focus:outline-none p-1 rounded-full hover:bg-white/20 transition-colors"
+          aria-label="Close chatbot"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       </div>
 
       <div ref={scrollRef} className="flex-grow p-6 space-y-4 overflow-y-auto bg-slate-900/40 custom-scrollbar">
