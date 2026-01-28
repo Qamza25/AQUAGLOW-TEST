@@ -1,0 +1,44 @@
+{
+  "high_priority": [
+    {
+      "id": "AG-001",
+      "title": "Refine Gemini Prompting",
+      "status": "In Progress",
+      "desc": "Optimize the diagnostic prompt for better car-specific reasoning and character count constraints."
+    },
+    {
+      "id": "AG-002",
+      "title": "Dynamic Pricing Engine",
+      "status": "Completed",
+      "desc": "Implement CAR_TYPE_BASE_PRICES logic to scale based on vehicle chassis dimensions."
+    },
+    {
+      "id": "AG-006",
+      "title": "Secure Payment Integration",
+      "status": "Todo",
+      "desc": "Replace simulated checkout with a real Stripe/PayPal gateway implementation."
+    }
+  ],
+  "medium_priority": [
+    {
+      "id": "AG-003",
+      "title": "Mobile Unit Geolocation",
+      "status": "Todo",
+      "desc": "Use browser geolocation API to verify if the user is within the 50km mobile service radius."
+    },
+    {
+      "id": "AG-004",
+      "title": "Multi-Speaker TTS",
+      "status": "Todo",
+      "desc": "Add a professional 'Voice Greeting' on the confirmation page using Gemini TTS."
+    }
+  ],
+  "low_priority": [
+    {
+      "id": "AG-005",
+      "title": "Loyalty Token Program",
+      "status": "Todo",
+      "desc": "Implement a 'Glow Points' system where users earn credits for recurring bookings."
+    }
+  ]
+}
