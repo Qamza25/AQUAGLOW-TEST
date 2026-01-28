@@ -153,23 +153,17 @@ The application supports browser-native ES modules and can run without a build s
 ### 🤖 AI Integration
 Gemini Service (services/geminiService.ts)
 
-Model: gemini-3-flash-preview
+-Model: gemini-3-flash-preview
+-Context-aware recommendations
+-Graceful fallback handling on API failure
 
-Temperature: 0.7
+### Prompt Strategy
 
-Context-aware recommendations
+-Vehicle context injection
+-Responses limited to under 30 words
+-Stage-aware prompts per conversation phase
 
-Graceful fallback handling on API failure
-
-Prompt Strategy
-
-Vehicle context injection
-
-Responses limited to under 30 words
-
-Stage-aware prompts per conversation phase
-
-💰 Pricing Model
+### 💰 Pricing Model
 Base Prices
 Vehicle Type	Base Price
 Sedan	R100
