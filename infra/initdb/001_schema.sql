@@ -1,6 +1,9 @@
--- Create customers table
-CREATE TABLE IF NOT EXISTS customers (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+﻿
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+
+CREATE TABLE customers (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     phone VARCHAR(50),
@@ -11,9 +14,9 @@ CREATE TABLE IF NOT EXISTS customers (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create services table
-CREATE TABLE IF NOT EXISTS services (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+CREATE TABLE services (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
     base_price DECIMAL(10,2) NOT NULL,
@@ -27,10 +30,10 @@ CREATE TABLE IF NOT EXISTS services (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create bookings table
-CREATE TABLE IF NOT EXISTS bookings (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    customer_id UUID NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
+
+CREATE TABLE bookings (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    customer_id UUID NOT NULL,
     date DATE NOT NULL,
     time VARCHAR(50) NOT NULL,
     service_type VARCHAR(255) NOT NULL,
@@ -51,17 +54,22 @@ CREATE TABLE IF NOT EXISTS bookings (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create indexes
+ALTER TABLE bookings 
+ADD CONSTRAINT bookings_customer_id_fkey 
+FOREIGN KEY (customer_id) 
+REFERENCES customers(id) 
+ON DELETE CASCADE;
+
 CREATE INDEX idx_customers_email ON customers(email);
 CREATE INDEX idx_bookings_customer_id ON bookings(customer_id);
 CREATE INDEX idx_bookings_date ON bookings(date);
 CREATE INDEX idx_bookings_status ON bookings(status);
-CREATE INDEX idx_bookings_reference ON bookings(reference_number);
+CREATE INDEX idx_bookings_reference_number ON bookings(reference_number);
 CREATE INDEX idx_bookings_payment_status ON bookings(payment_status);
 CREATE INDEX idx_services_category ON services(category);
-CREATE INDEX idx_services_active ON services(active) WHERE active = true;
+CREATE INDEX idx_services_active ON services(active);
 
--- Create updated_at trigger function
+
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -70,7 +78,7 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
--- Apply triggers to all tables
+
 CREATE TRIGGER update_customers_updated_at BEFORE UPDATE ON customers
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
@@ -79,3 +87,19 @@ CREATE TRIGGER update_services_updated_at BEFORE UPDATE ON services
 
 CREATE TRIGGER update_bookings_updated_at BEFORE UPDATE ON bookings
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+
+DO $$
+BEGIN
+    RAISE NOTICE '========================================';
+    RAISE NOTICE 'Database schema created successfully!';
+    RAISE NOTICE '========================================';
+    RAISE NOTICE 'Tables created:';
+    RAISE NOTICE '  • customers';
+    RAISE NOTICE '  • services';
+    RAISE NOTICE '  • bookings';
+    RAISE NOTICE '';
+    RAISE NOTICE 'Indexes created: 8';
+    RAISE NOTICE 'Triggers created: 3';
+    RAISE NOTICE '========================================';
+END $$;

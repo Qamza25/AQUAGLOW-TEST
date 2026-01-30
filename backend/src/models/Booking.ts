@@ -145,6 +145,9 @@ Booking.init(
     sequelize,
     tableName: 'bookings',
     timestamps: true,
+    underscored: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
   }
 );
 

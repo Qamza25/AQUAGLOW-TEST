@@ -54,16 +54,21 @@ Customer.init(
     loyaltyPoints: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
+      field: 'loyalty_points',
     },
     totalSpent: {
       type: DataTypes.DECIMAL(10, 2),
       defaultValue: 0,
+      field: 'total_spent',
     },
   },
   {
     sequelize,
     tableName: 'customers',
     timestamps: true,
+    underscored: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
     indexes: [
       {
         unique: true,

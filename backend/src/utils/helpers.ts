@@ -167,8 +167,10 @@ export async function comparePassword(password: string, hash: string): Promise<b
 /**
  * Generate JWT token
  */
-export function generateToken(payload: object, expiresIn: string = config.JWT_EXPIRY): string {
-  return jwt.sign(payload, config.JWT_SECRET, { expiresIn });
+export function generateToken(payload: object, expiresIn: string = '7d'): string {
+  // Use config.JWT_SECRET if it exists, otherwise use a fallback
+  const secret = config.JWT_SECRET || process.env.JWT_SECRET || 'your-jwt-secret-key';
+  return jwt.sign(payload, secret, { expiresIn });
 }
 
 /**
@@ -176,7 +178,9 @@ export function generateToken(payload: object, expiresIn: string = config.JWT_EX
  */
 export function verifyToken(token: string): any {
   try {
-    return jwt.verify(token, config.JWT_SECRET);
+    // Use config.JWT_SECRET if it exists, otherwise use a fallback
+    const secret = config.JWT_SECRET || process.env.JWT_SECRET || 'your-jwt-secret-key';
+    return jwt.verify(token, secret);
   } catch (error) {
     logger.error('Token verification failed:', error);
     return null;
@@ -219,10 +223,10 @@ export function debounce<T extends (...args: any[]) => any>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout;
+  let timeout: NodeJS.Timeout | null = null;
   
   return (...args: Parameters<T>) => {
-    clearTimeout(timeout);
+    if (timeout) clearTimeout(timeout);
     timeout = setTimeout(() => func(...args), wait);
   };
 }
@@ -234,13 +238,23 @@ export function throttle<T extends (...args: any[]) => any>(
   func: T,
   limit: number
 ): (...args: Parameters<T>) => void {
-  let inThrottle: boolean;
+  let inThrottle: boolean = false;
+  let lastFunc: NodeJS.Timeout | null = null;
+  let lastRan: number | null = null;
   
   return (...args: Parameters<T>) => {
     if (!inThrottle) {
       func(...args);
       inThrottle = true;
       setTimeout(() => (inThrottle = false), limit);
+    } else {
+      if (lastFunc) clearTimeout(lastFunc);
+      lastFunc = setTimeout(() => {
+        if (Date.now() - (lastRan || 0) >= limit) {
+          func(...args);
+          lastRan = Date.now();
+        }
+      }, limit - (Date.now() - (lastRan || 0)));
     }
   };
 }
@@ -282,14 +296,19 @@ export function calculateCompletionTime(
   appointmentType: AppointmentType
 ): string {
   const [time, period] = startTime.split(' ');
-  const [hours, minutes] = time.split(':').map(Number);
+  const [hoursStr, minutesStr] = time.split(':');
+  let hours = parseInt(hoursStr, 10);
+  const minutes = parseInt(minutesStr, 10);
   
-  let totalHours = hours;
-  if (period === 'PM' && hours !== 12) totalHours += 12;
-  if (period === 'AM' && hours === 12) totalHours = 0;
+  // Convert to 24-hour format
+  if (period === 'PM' && hours !== 12) {
+    hours += 12;
+  } else if (period === 'AM' && hours === 12) {
+    hours = 0;
+  }
   
   const startDate = new Date();
-  startDate.setHours(totalHours, minutes, 0, 0);
+  startDate.setHours(hours, minutes, 0, 0);
   
   // Add buffer based on appointment type
   const buffer = appointmentType === AppointmentType.MOBILE ? 30 : 15;
@@ -378,24 +397,33 @@ export function parseQueryParams(query: any): any {
   Object.keys(query).forEach(key => {
     const value = query[key];
     
-    // Handle pagination
-    if (key === 'page' || key === 'limit') {
-      filters[key] = parseInt(value, 10);
-    }
-    // Handle booleans
-    else if (value === 'true' || value === 'false') {
-      filters[key] = value === 'true';
-    }
-    // Handle arrays (comma-separated)
-    else if (value.includes(',')) {
-      filters[key] = value.split(',').map((v: string) => v.trim());
-    }
-    // Handle dates
-    else if (key.includes('date') || key.includes('Date')) {
-      filters[key] = new Date(value);
-    }
-    // Default to string
-    else {
+    if (typeof value === 'string') {
+      // Handle pagination
+      if (key === 'page' || key === 'limit') {
+        filters[key] = parseInt(value, 10);
+      }
+      // Handle booleans
+      else if (value === 'true' || value === 'false') {
+        filters[key] = value === 'true';
+      }
+      // Handle arrays (comma-separated)
+      else if (value.includes(',')) {
+        filters[key] = value.split(',').map((v: string) => v.trim());
+      }
+      // Handle dates
+      else if (key.includes('date') || key.includes('Date')) {
+        const date = new Date(value);
+        if (!isNaN(date.getTime())) {
+          filters[key] = date;
+        } else {
+          filters[key] = value;
+        }
+      }
+      // Default to string
+      else {
+        filters[key] = value;
+      }
+    } else {
       filters[key] = value;
     }
   });
@@ -418,7 +446,7 @@ export async function retry<T>(
   maxRetries: number = 3,
   delay: number = 1000
 ): Promise<T> {
-  let lastError: Error;
+  let lastError: Error = new Error('Retry failed');
   
   for (let i = 0; i < maxRetries; i++) {
     try {
@@ -479,38 +507,3 @@ export function groupBookingsByDate(bookings: any[]): Record<string, any[]> {
     return groups;
   }, {} as Record<string, any[]>);
 }
-
-// Export all helper functions
-export {
-  generateReferenceNumber,
-  generateShortId,
-  formatPrice,
-  calculateTotalPrice,
-  formatDate,
-  isValidBookingDate,
-  isValidTimeSlot,
-  getAvailableTimeSlots,
-  hashPassword,
-  comparePassword,
-  generateToken,
-  verifyToken,
-  sanitizeInput,
-  generateRandomColor,
-  debounce,
-  throttle,
-  getBookingProgress,
-  getStatusColor,
-  calculateCompletionTime,
-  getTimeBasedGreeting,
-  truncateText,
-  formatPhoneNumber,
-  isValidEmail,
-  generateCSV,
-  parseQueryParams,
-  sleep,
-  retry,
-  generateResetToken,
-  calculateLoyaltyPoints,
-  getNextAvailableDate,
-  groupBookingsByDate
-};

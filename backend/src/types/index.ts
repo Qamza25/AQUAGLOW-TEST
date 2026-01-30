@@ -32,6 +32,12 @@ export enum BookingStatus {
   CANCELLED = 'cancelled'
 }
 
+export enum PaymentStatus {
+  PENDING = 'pending',
+  PAID = 'paid',
+  FAILED = 'failed'
+}
+
 // Frontend types matching React components
 export interface WashPackage {
   id: string;
@@ -73,7 +79,7 @@ export interface Booking extends BookingDetails {
   totalPrice: number;
   status: BookingStatus;
   paymentMethod?: 'card' | 'cash';
-  paymentStatus: 'pending' | 'paid' | 'failed';
+  paymentStatus: PaymentStatus;
   notes?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -153,7 +159,7 @@ export interface UpdateBookingStatusRequest {
 }
 
 export interface UpdatePaymentStatusRequest {
-  paymentStatus: 'pending' | 'paid' | 'failed';
+  paymentStatus: PaymentStatus;
   paymentMethod?: 'card' | 'cash';
 }
 
@@ -314,37 +320,6 @@ export interface AppConfig {
     expiry: string;
   };
 }
-
-// Export all types
-export type {
-  WashPackage,
-  CarDetails,
-  BookingDetails,
-  Booking,
-  Customer,
-  Service,
-  ApiResponse,
-  PaginatedResponse,
-  CreateBookingRequest,
-  UpdateBookingStatusRequest,
-  UpdatePaymentStatusRequest,
-  CalculatePriceRequest,
-  CalculatePriceResponse,
-  BookingStats,
-  CustomerStats,
-  TimeSlot,
-  AvailableSlotsResponse,
-  EmailTemplate,
-  PaymentIntent,
-  BookingFilters,
-  CustomerFilters,
-  ValidationError,
-  AIRecommendationRequest,
-  AIRecommendationResponse,
-  ChatMessage,
-  ChatContext,
-  AppConfig
-};
 
 // Utility types
 export type Nullable<T> = T | null;

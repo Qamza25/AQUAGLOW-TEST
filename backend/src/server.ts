@@ -1,6 +1,6 @@
 import { createApp } from './app';
 import { config } from './config/env';
-import sequelize from './config/database';  // Import default export
+import sequelize from './config/database';
 import logger from './utils/logger';
 
 async function startServer() {
@@ -16,11 +16,11 @@ async function startServer() {
     console.log('🔄 Loading models...');
     await import('./models/index');
     
-    // Sync database models (create tables if they don't exist)
+    // Sync database models - DISABLE ALTER FOR NOW
     console.log('🔄 Syncing database...');
     await sequelize.sync({ 
-      alter: config.NODE_ENV === 'development',
-      force: false  // NEVER set to true in production
+      alter: false,  // Changed from true to false
+      force: false
     });
     console.log('✅ Database synchronized');
     
@@ -78,17 +78,9 @@ async function startServer() {
     
     if (error.name === 'SequelizeConnectionError') {
       console.error('\n🔧 Database Connection Troubleshooting:');
-      console.error('1. Is PostgreSQL running? Check with:');
-      console.error('   Windows: services.msc → Look for PostgreSQL');
-      console.error('   Command: net start | findstr PostgreSQL');
-      console.error('2. Check .env file credentials:');
-      console.error(`   DB_HOST: ${config.DB_HOST}`);
-      console.error(`   DB_PORT: ${config.DB_PORT}`);
-      console.error(`   DB_NAME: ${config.DB_NAME}`);
-      console.error(`   DB_USER: ${config.DB_USER}`);
-      console.error(`   DB_PASSWORD: ${config.DB_PASSWORD ? '*****' : 'NOT SET'}`);
-      console.error('3. Test connection manually:');
-      console.error(`   psql -h ${config.DB_HOST} -U ${config.DB_USER} -d ${config.DB_NAME}`);
+      console.error('1. Is PostgreSQL running?');
+      console.error('2. Check .env file credentials');
+      console.error(`3. Try: psql -h ${config.DB_HOST} -U ${config.DB_USER} -d ${config.DB_NAME}`);
     }
     
     console.error('='.repeat(50));
