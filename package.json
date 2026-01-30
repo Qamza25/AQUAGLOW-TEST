@@ -1,0 +1,14 @@
+{
+  "name": "testing-setup",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "devDependencies": {
+    "chai": "^6.2.2",
+    "jest": "^30.2.0",
+    "mocha": "^11.7.5"
+  },
+  "scripts": {
+    "test": "jest",
+    "test:mocha": "mocha"
+  }
+}
