@@ -45,11 +45,24 @@ export interface WashPackage {
 }
 
 export interface BookingDetails {
-  date: string;
+date: string;
   time: string;
   customerName: string;
   customerEmail: string;
-  appointmentType?: AppointmentType;
+  phone?: string;
+  appointmentType: AppointmentType;
+  paymentMethod: 'card' | 'cash';
+  serviceType?: string;
+  vehicleType?: string;
+  vehicleYear?: string;
+  vehicleMake?: string;
+  vehicleModel?: string;
+  condition?: string;
+  extras?: string[];
+  notes?: string;
+  referenceNumber?: string;
+  totalPrice?: number;
+  id?: string | number;
 }
 
 export enum AppStep {

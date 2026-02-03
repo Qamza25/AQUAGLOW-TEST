@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { WashPackage, BookingDetails, AppointmentType, CarDetails } from '../types';
 import { ICONS, CAR_TYPE_BASE_PRICES, EXTRAS_LIST } from '../constants';

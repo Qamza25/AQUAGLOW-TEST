@@ -50,6 +50,7 @@ Service.init(
     basePrice: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
+      field: 'base_price', // ✅ explicitly map to DB column
     },
     duration: {
       type: DataTypes.INTEGER,
@@ -58,6 +59,7 @@ Service.init(
     vehicleTypes: {
       type: DataTypes.ARRAY(DataTypes.STRING),
       defaultValue: [],
+      field: 'vehicle_types', // ✅ explicitly map
     },
     category: {
       type: DataTypes.ENUM('basic', 'deluxe', 'premium'),
@@ -69,6 +71,7 @@ Service.init(
     },
     imageUrl: {
       type: DataTypes.STRING,
+      field: 'image_url', // ✅ explicitly map
     },
     active: {
       type: DataTypes.BOOLEAN,

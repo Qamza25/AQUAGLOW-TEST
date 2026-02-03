@@ -56,6 +56,22 @@ export const createApp = () => {
     });
   });
   
+  // Root API endpoint - Welcome message
+  app.get('/api', (req, res) => {
+    res.json({
+      success: true,
+      message: 'Welcome to AquaGlow API',
+      version: '1.0.0',
+      endpoints: {
+        health: '/health',
+        bookings: '/api/bookings',
+        services: '/api/services',
+        customers: '/api/customers'
+      },
+      documentation: 'https://api.aquaglow.com/docs'
+    });
+  });
+  
   // API routes
   app.use('/api/bookings', bookingRoutes);
   app.use('/api/services', serviceRoutes);
